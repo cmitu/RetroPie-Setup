@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f0b8f75..e2d9f56 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -20,7 +20,7 @@ elseif(GL)
+     set(GLSystem "Desktop OpenGL" CACHE STRING "The OpenGL system to be used")
+ #-------------------------------------------------------------------------------
+ #check if we're running on Raspberry Pi
+-elseif(EXISTS "/opt/vc/include/bcm_host.h")
++elseif(EXISTS "/opt/vc/include/bcm_host.h" OR EXISTS "${CMAKE_SYSROOT}/opt/vc/include/bcm_host.h")
+     MESSAGE("bcm_host.h found")
+     set(BCMHOST found)
+     set(GLSystem "OpenGL ES" CACHE STRING "The OpenGL system to be used")

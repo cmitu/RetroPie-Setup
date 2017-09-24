@@ -1,0 +1,11 @@
+diff --git a/Makefile b/Makefile
+index 519e7ba..3dc6e96 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,5 +1,5 @@
+ DEBUG = 0
+-CC = gcc
++CC ?= gcc
+ TARGET := libpocketsnes.so
+ fpic := -fPIC
+ SHARED := -shared -Wl,--version-script=libretro/link.T

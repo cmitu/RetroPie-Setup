@@ -1,0 +1,26 @@
+--- a/src/linux/Makefile
++++ b/src/linux/Makefile
+@@ -1,12 +1,12 @@
+ # Project: sdltrs
+ 
+-CC   = gcc
++CC   ?= gcc
+ OBJ  = blit.o debug.o dis.o error.o load_cmd.o load_hex.o main.o trs_mkdisk.o trs_cassette.o trs_chars.o trs_disk.o trs_hard.o trs_imp_exp.o trs_interrupt.o trs_io.o trs_memory.o trs_printer.o trs_rom1.o trs_rom3.o trs_rom4p.o trs_sdl_gui.o trs_sdl_interface.o trs_sdl_keyboard.o trs_state_save.o trs_uart.o z80.o sdltrs_main.o PasteManager.o
+ LINKOBJ  = blit.o debug.o dis.o error.o load_cmd.o load_hex.o main.o trs_mkdisk.o trs_cassette.o trs_chars.o trs_disk.o trs_hard.o trs_imp_exp.o trs_interrupt.o trs_io.o trs_memory.o trs_printer.o trs_rom1.o trs_rom3.o trs_rom4p.o trs_sdl_gui.o trs_sdl_interface.o trs_sdl_keyboard.o trs_state_save.o  trs_uart.o z80.o sdltrs_main.o PasteManager.o
+ LIBS =  -lSDL -lXt -lX11
+ INCS =  
+ BIN  = sdltrs
+-CFLAGS = $(INCS) -g 
++CFLAGS += $(INCS) -g
+ 
+ .PHONY: all all-before all-after clean clean-custom
+ 
+@@ -17,7 +17,7 @@ clean: clean-custom
+        rm -f $(OBJ) $(BIN)
+ 
+ $(BIN): $(OBJ)
+-       $(CC) $(LINKOBJ) -o "sdltrs" $(LIBS)
++       $(CC) $(LINKOBJ) -o "sdltrs" $(LIBS) $(LDFLAGS)
+ 
+ blit.o: ../blit.c
+        $(CC) -c ../blit.c -o blit.o $(CFLAGS)

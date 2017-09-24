@@ -1,0 +1,58 @@
+diff --git a/sdl/makefile.rpi b/sdl/makefile.rpi
+index 7baca5d..e326cf6 100644
+--- a/sdl/makefile.rpi
++++ b/sdl/makefile.rpi
+@@ -1,11 +1,27 @@
+ # makefile for Raspberry Pi
+ 
+ 
+-SDL_CONFIG = sdl-config
+-SDL_CFLAGS = `$(SDL_CONFIG) --cflags` -I/usr/local/include/SDL
+-
+-CC		= gcc
+-AS		= as
++ifeq ($(origin PKG_CONFIG), undefined)
++  $(echo Detecting PKG_CONFIG)
++  PKG_CONFIG = $(CROSS_COMPILE)pkg-config
++  ifeq ($(shell which $(PKG_CONFIG) 2>/dev/null),)
++    $(warning $(PKG_CONFIG) not found)
++  endif
++
++endif
++
++
++# Try detecting the SDL cflags/ldflags from pkg-config before sdl-config
++ifneq ($(PKG_CONFIG),no)
++   SDL_CFLAGS = $(shell $(PKG_CONFIG) --cflags sdl 2>/dev/null )
++   SDL_LIBS = $(shell $(PKG_CONFIG) --libs sdl 2>/dev/null)
++else
++   SDL_CFLAGS = $(shell $(SDL_CONFIG) -cflags)
++   SDL_LIBS = $(shell $(SDL_CONFIG) -libs)
++endif
++
++CC		?= gcc
++AS		?= as
+ RM		= rm -f
+ 
+ OBJBASE	= ../obj
+@@ -77,9 +93,9 @@ COPT	= -c -Wall -pipe -O3 -Wpointer-arith -fno-exceptions \
+ 			-I$(BASE) -I$(COMMON) -I$(CODECNV) -I$(I286C) -I$(MEM) -I$(IO) \
+ 			-I$(CBUS) -I$(BIOS) -I$(LIO) -I$(VRAM) -I$(SOUND) -I$(VERMOUTH) \
+ 			-I$(GETSND) -I$(FDD) -I$(FONT) -I$(GENERIC) -I$(EMBED) -I$(MENU) \
+-			-I$(MENUBASE) -I$(TARGET) -I$(TARGET2) $(SDL_CFLAGS)
++			-I$(MENUBASE) -I$(TARGET) -I$(TARGET2) $(SDL_CFLAGS) $(CFLAGS)
+ AOPT	= -I$(ARM) -I$(I286AG)
+-LOPT	=
++LOPT	+= $(LDFLAGS)
+ 
+ NP2OBJ	=	$(OBJ)/strres.o		$(OBJ)/milstr.o		$(OBJ)/_memory.o	\
+ 			$(OBJ)/textfile.o	$(OBJ)/profile.o	$(OBJ)/rect.o		\
+@@ -152,7 +168,7 @@ NP2OBJ	=	$(OBJ)/strres.o		$(OBJ)/milstr.o		$(OBJ)/_memory.o	\
+ 			$(OBJ)/timing.o		$(OBJ)/keystat.o	$(OBJ)/statsave.o	\
+ 			$(OBJ)/debugsub.o
+ 
+-NP2LIB	= -lm -lSDL -lSDL_ttf -lfreetype `$(SDL_CONFIG) --libs`
++NP2LIB	= -lm -lSDL -lSDL_ttf -lfreetype $(SDL_LIBS)
+ NP2BIN	= $(BIN)/np2
+ 
+ 
