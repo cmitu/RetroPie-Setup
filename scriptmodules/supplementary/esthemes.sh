@@ -163,6 +163,7 @@ function gui_esthemes() {
         'RetroHursty69 hurstyspin'
         'RetroHursty69 cyber'
         'RetroHursty69 supersweet'
+        'RetroHursty69 donkeykonkey'
         'Saracade scv720'
         'chicueloarcade Chicuelo'
         'SuperMagicom nostalgic'
@@ -171,6 +172,9 @@ function gui_esthemes() {
         'lipebello spaceoddity'
         'lipebello swineapple'
         'waweedman pii-wii'
+        'waweedman Blade-360'
+        'waweedman Venom'
+        'waweedman Spider-Man'
     )
     while true; do
         local theme
