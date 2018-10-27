@@ -303,7 +303,7 @@ function _scrape_skyscraper() {
 
     # trap ctrl+c and return if pressed (rather than exiting retropie-setup etc)
     trap 'trap 2; return 1' INT
-        sudo -u "$user" stdbuf -o0 "$md_inst/Skyscraper" "${params[@]}"
+        sudo -u "$user" "$md_inst/Skyscraper" "${params[@]}"
         echo -e "\nCOMMAND LINE USED:\n $md_inst/Skyscraper" "${params[@]}"
         sleep 2
     trap 2
@@ -372,10 +372,10 @@ function _open_editor_skyscraper() {
     local editor
 
     if [[ -n $(command -v sensible-editor) ]]; then
-        sudo -u $user sensible-editor "$1"
+        sensible-editor "$1"
     else
         editor="${EDITOR:-nano}"
-        sudo -u $user $editor "$1"
+        $editor "$1"
     fi
 }
 
