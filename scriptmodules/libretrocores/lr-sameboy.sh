@@ -21,6 +21,8 @@ function sources_lr-sameboy() {
 }
 
 function build_lr-sameboy() {
+    # build dependencies for 'rgbds'
+    aptInstall libpng-dev bison flex
     gitPullOrClone "rgbds" https://github.com/rednex/rgbds
     make -C rgbds
 
