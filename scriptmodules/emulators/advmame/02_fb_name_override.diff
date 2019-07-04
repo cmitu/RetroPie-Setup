@@ -1,0 +1,33 @@
+diff --git a/advance/linux/vfb.c b/advance/linux/vfb.c
+index 0875d1c..091bdaf 100644
+--- a/advance/linux/vfb.c
++++ b/advance/linux/vfb.c
+@@ -680,6 +680,8 @@ void vc_log(TV_DISPLAY_STATE_T* state)
+ adv_error fb_init(int device_id, adv_output output, unsigned overlay_size, adv_cursor cursor)
+ {
+ 	const char* fb;
++	const char* id_buffer_override;
++	const char* ADV_OVERRIDE_FBID = "ADV_FBID";
+ 	char id_buffer[64];
+ 	char* term;
+ 
+@@ -739,7 +741,13 @@ adv_error fb_init(int device_id, adv_output output, unsigned overlay_size, adv_c
+ 	/* copy the id in a safe way, it may be not 0 terminated */
+ 	sncpyn(id_buffer, sizeof(id_buffer), fb_state.fixinfo.id, sizeof(fb_state.fixinfo.id));
+ 
+-	log_std(("video:fb: id %s\n", id_buffer));
++	log_std(("video:fb: detected id %s\n", id_buffer));
++
++	id_buffer_override = getenv(ADV_OVERRIDE_FBID);
++	if (strlen(id_buffer_override)) {
++		sncpyn(id_buffer, sizeof(id_buffer), id_buffer_override, sizeof(id_buffer_override));
++		log_std(("video:fb: id overriden by %s %s", ADV_OVERRIDE_FBID, id_buffer_override));
++	}
+ 
+ 	/* set the size like the original video mode */
+ 	target_size_set(fb_state.varinfo.xres, fb_state.varinfo.yres);
+@@ -2123,4 +2131,3 @@ int os_internal_fb_is_video_mode_active(void)
+ {
+ 	return fb_is_active() && fb_mode_is_active();
+ }
+-

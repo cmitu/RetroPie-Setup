@@ -34,6 +34,7 @@ function depends_advmame() {
 
 function sources_advmame() {
     gitPullOrClone "$md_build" https://github.com/amadvance/advancemame v3.9
+    applyPatch "$md_data/02_fb_name_override.diff"
 }
 
 function build_advmame() {
