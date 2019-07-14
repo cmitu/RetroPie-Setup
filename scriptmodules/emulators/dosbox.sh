@@ -54,6 +54,20 @@ function build_dosbox() {
     md_ret_require="$md_build/src/dosbox"
 }
 
+# helper method to ensure that 'freepats' soundfonts are configured for Timidity
+function _config_soundfonts_freepats_dosbox()
+{
+    dpkg -S fluidsynth-fonts-gm >/dev/null 2>&1 && exit 0
+
+    local conf="/etc/timidity/timidity.cfg"
+    if grep -qe '^source.*fluid.*gm' "$conf" ; then
+        sed -i 's/^source.*fluid.*gm/#&/' "$conf"
+    fi
+    if ! grep -qe '^source.*freepats' "$conf" ; then
+        echo -e "\nsource /etc/timidity/freepats.cfg" >> "$conf"
+    fi
+}
+
 function install_dosbox() {
     make install
     md_ret_require="$md_inst/bin/dosbox"
@@ -70,6 +84,7 @@ function configure_dosbox() {
         # needs software synth for midi; limit to Pi for now
         if isPlatform "rpi"; then
             local needs_synth="1"
+	    _config_soundfonts_freepats_dosbox
         fi
     fi
 
@@ -87,12 +102,14 @@ function midi_synth() {
     case "\$1" in
         "start")
             timidity -Os -iAD &
-            until [[ -n "\$(aconnect -o | grep TiMidity)" ]]; do
+            local timeout=10
+            until [[ -n "\$(aconnect -o | grep TiMidity)" || \$timeout -le 0 ]]; do
                 sleep 1
+                timeout=\$((timeout-1))
             done
             ;;
         "stop")
-            killall timidity
+            killall timidity 2>/dev/null
             ;;
         *)
             ;;
