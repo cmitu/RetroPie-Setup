@@ -33,6 +33,9 @@ function build_zdoom() {
     mkdir -p release
     cd release
     local params=(-DCMAKE_INSTALL_PREFIX="$md_inst" -DCMAKE_BUILD_TYPE=Release)
+    if compareVersions "$__gcc_version" ge 8.0.0; then
+        params+=( -DNO_ASM=ON )
+    fi
     cmake "${params[@]}" ..
     make
     md_ret_require="$md_build/release/zdoom"
