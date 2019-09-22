@@ -882,6 +882,20 @@ function setRetroArchCoreOption() {
     chown $user:$user "$configdir/all/retroarch-core-options.cfg"
 }
 
+## @fn setRetroArchConfigOption
+## @param option option to set
+## @param value value to set
+## @brief Sets a retroarch global config option in `$configdir/all/retroarch.cfg`
+function setRetroArchConfigOption() {
+    local option="$1"
+    local value="$2"
+    iniConfig " = " "\"" "$configdir/all/retroarch.cfg"
+    iniGet "$option"
+    if [[ -z "$ini_value" ]]; then
+        iniSet "$option" "$value"
+    fi
+}
+
 ## @fn setConfigRoot()
 ## @param dir directory under $configdir to use
 ## @brief Sets module config root `$md_conf_root` to subfolder from `$configdir`

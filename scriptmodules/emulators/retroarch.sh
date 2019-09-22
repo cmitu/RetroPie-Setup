@@ -22,6 +22,7 @@ function depends_retroarch() {
     isPlatform "mali" && depends+=(mali-fbdev)
     isPlatform "x11" && depends+=(libx11-xcb-dev libpulse-dev libvulkan-dev)
     isPlatform "vero4k" && depends+=(vero3-userland-dev-osmc zlib1g-dev libfreetype6-dev)
+    isPlatform "kms" && depends+=(libgbm-dev)
 
     if compareVersions "$__os_debian_ver" ge 9; then
         depends+=(libavcodec-dev libavformat-dev libavdevice-dev)
@@ -35,15 +36,12 @@ function depends_retroarch() {
     fi
 
     getDepends "${depends[@]}"
-
-    addUdevInputRules
 }
 
 function sources_retroarch() {
-    gitPullOrClone "$md_build" https://github.com/libretro/RetroArch.git v1.7.6
+    gitPullOrClone "$md_build" https://github.com/libretro/RetroArch.git v1.7.8.4
     applyPatch "$md_data/01_hotkey_hack.diff"
     applyPatch "$md_data/02_disable_search.diff"
-    applyPatch "$md_data/03_disable_udev_sort.diff"
 }
 
 function build_retroarch() {
@@ -57,14 +55,18 @@ function build_retroarch() {
     fi
     isPlatform "gles" && params+=(--enable-opengles)
     # Temporarily block dispmanx support for fkms until upstream support is fixed
-    isPlatform "dispmanx" && ! isPlatform "kms" && params+=(--enable-dispmanx)
+    isPlatform "dispmanx" && ! isPlatform "kms" && params+=(--enable-dispmanx --disable-opengl1)
     isPlatform "rpi" && isPlatform "mesa" && params+=(--disable-videocore)
     isPlatform "mali" && params+=(--enable-mali_fbdev)
-    isPlatform "kms" && params+=(--enable-kms)
+    isPlatform "kms" && params+=(--enable-kms --enable-egl)
     isPlatform "arm" && params+=(--enable-floathard)
     isPlatform "neon" && params+=(--enable-neon)
     isPlatform "x11" && params+=(--enable-vulkan)
     isPlatform "vero4k" && params+=(--enable-mali_fbdev --with-opengles_libs='-L/opt/vero3/lib')
+    if isPlatform "rpi" && isPlatform "mesa"; then
+        params+=(--disable-videocore)
+        [ -f "/opt/vc/lib/pkgconfig/egl.pc" ] && PKG_CONFIG_PATH=""
+    fi
     ./configure --prefix="$md_inst" "${params[@]}"
     make clean
     make
@@ -123,6 +125,8 @@ function _package_xmb_monochrome_assets_retroarch() {
 function configure_retroarch() {
     [[ "$md_mode" == "remove" ]] && return
 
+    addUdevInputRules
+
     # move / symlink the retroarch configuration
     moveConfigDir "$home/.config/retroarch" "$configdir/all/retroarch"
 
@@ -156,12 +160,13 @@ function configure_retroarch() {
     iniSet "video_aspect_ratio_auto" "true"
     iniSet "video_smooth" "false"
     iniSet "rgui_show_start_screen" "false"
+    iniSet "rgui_browser_directory" "$romdir"
 
     if ! isPlatform "x86"; then
         iniSet "video_threaded" "true"
     fi
 
-    iniSet "video_font_size" "12"
+    iniSet "video_font_size" "24"
     iniSet "core_options_path" "$configdir/all/retroarch-core-options.cfg"
     isPlatform "x11" && iniSet "video_fullscreen" "true"
     isPlatform "mesa" && iniSet "video_fullscreen" "true"
@@ -212,9 +217,10 @@ function configure_retroarch() {
     # rgui by default
     iniSet "menu_driver" "rgui"
 
-    # hide online updater menu options
+    # hide online updater menu options and the restart option
     iniSet "menu_show_core_updater" "false"
     iniSet "menu_show_online_updater" "false"
+    iniSet "menu_show_restart_retroarch" "false"
 
     # disable unnecessary xmb menu tabs
     iniSet "xmb_show_add" "false"
@@ -228,18 +234,27 @@ function configure_retroarch() {
     # swap A/B buttons based on ES configuration
     iniSet "menu_swap_ok_cancel_buttons" "$es_swap"
 
+    # disable 'press twice to quit'
+    iniSet "quit_press_twice" "false"
+
+    # enable video shaders
+    iniSet "video_shader_enable" "true"
+
     copyDefaultConfig "$config" "$configdir/all/retroarch.cfg"
     rm "$config"
 
     # if no menu_driver is set, force RGUI, as the default has now changed to XMB.
-    iniConfig " = " '"' "$configdir/all/retroarch.cfg"
-    iniGet "menu_driver"
-    [[ -z "$ini_value" ]] && iniSet "menu_driver" "rgui"
+    setRetroArchConfigOption "menu_driver" "rgui"
 
     # if no menu_unified_controls is set, force it on so that keyboard player 1 can control
     # the RGUI menu which is important for arcade sticks etc that map to keyboard inputs
-    iniGet "menu_unified_controls"
-    [[ -z "$ini_value" ]] && iniSet "menu_unified_controls" "true"
+    setRetroArchConfigOption "menu_unified_controls" "true"
+
+    # disable `quit_press_twice` on existing configs
+    setRetroArchConfigOption "quit_press_twice" "false"
+
+    # enable video shaders on existing configs
+    setRetroArchConfigOption "video_shader_enable" "true"
 
     # remapping hack for old 8bitdo firmware
     addAutoConf "8bitdo_hack" 0
