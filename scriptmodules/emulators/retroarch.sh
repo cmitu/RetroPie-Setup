@@ -244,17 +244,17 @@ function configure_retroarch() {
     rm "$config"
 
     # if no menu_driver is set, force RGUI, as the default has now changed to XMB.
-    setRetroArchConfigOption "menu_driver" "rgui"
+    _init_config_option_retroarch "menu_driver" "rgui"
 
     # if no menu_unified_controls is set, force it on so that keyboard player 1 can control
     # the RGUI menu which is important for arcade sticks etc that map to keyboard inputs
-    setRetroArchConfigOption "menu_unified_controls" "true"
+    _init_config_option_retroarch "menu_unified_controls" "true"
 
     # disable `quit_press_twice` on existing configs
-    setRetroArchConfigOption "quit_press_twice" "false"
+    _init_config_option_retroarch "quit_press_twice" "false"
 
     # enable video shaders on existing configs
-    setRetroArchConfigOption "video_shader_enable" "true"
+    _init_config_option_retroarch "video_shader_enable" "true"
 
     # remapping hack for old 8bitdo firmware
     addAutoConf "8bitdo_hack" 0
@@ -374,4 +374,16 @@ function gui_retroarch() {
         esac
 
     done
+}
+
+# adds a retroarch global config option in `$configdir/all/retroarch.cfg`, if not already set
+function _set_config_option_retroarch()
+{
+    local option="$1"
+    local value="$2"
+    iniConfig " = " "\"" "$configdir/all/retroarch.cfg"
+    iniGet "$option"
+    if [[ -z "$ini_value" ]]; then
+        iniSet "$option" "$value"
+    fi
 }
