@@ -30,7 +30,7 @@ function depends_virtualgamepad() {
             getDepends curl
             # remove any old node package - we will use nodesource
             hasPackage node && aptRemove node
-            curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
+            curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
             # force aptInstall to get a fresh list before installing
             __apt_update=0
             aptInstall nodejs
@@ -41,6 +41,8 @@ function depends_virtualgamepad() {
 function remove_virtualgamepad() {
     pm2 stop main
     pm2 delete main
+    pm2 unstartup
+    npm remove pm2 -g
     rm -f /etc/apt/sources.list.d/nodesource.list
 }
 
