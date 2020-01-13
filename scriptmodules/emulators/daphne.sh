@@ -14,7 +14,7 @@ rp_module_desc="Daphne - Laserdisc Emulator"
 rp_module_help="ROM Extension: .daphne\n\nCopy your Daphne roms to $romdir/daphne"
 rp_module_licence="GPL2 https://raw.githubusercontent.com/RetroPie/daphne-emu/master/COPYING"
 rp_module_section="opt"
-rp_module_flags="!x86 !mali !kms"
+rp_module_flags="!x86 !mali"
 
 function depends_daphne() {
     getDepends libsdl1.2-dev libvorbis-dev libglew-dev zlib1g-dev
@@ -64,13 +64,17 @@ if [[ -f "\$dir/\$name.commands" ]]; then
     params=\$(<"\$dir/\$name.commands")
 fi
 
-"$md_inst/daphne.bin" "\$name" vldp -nohwaccel -framefile "\$dir/\$name.txt" -homedir "$md_inst" -fullscreen \$params
+if [[ -n "\$2" && -n "\$3" ]]; then
+    resolution="-x \$2 -y \$3"
+fi
+
+"$md_inst/daphne.bin" "\$name" vldp -nohwaccel -framefile "\$dir/\$name.txt" -homedir "$md_inst" -fullscreen \$params \$resolution
 _EOF_
     chmod +x "$md_inst/daphne.sh"
 
     chown -R $user:$user "$md_inst"
     chown -R $user:$user "$md_conf_root/daphne/dapinput.ini"
 
-    addEmulator 1 "$md_id" "daphne" "$md_inst/daphne.sh %ROM%"
+    addEmulator 1 "$md_id" "daphne" "$md_inst/daphne.sh %ROM% %XRES% %YRES%"
     addSystem "daphne"
 }
