@@ -121,6 +121,8 @@ function configure_advmame() {
             iniSet "device_keyboard" "sdl"
             # default for best performance
             iniSet "display_magnify" "1"
+            # disable SMP temporarily to fix the crash on exit
+            iniSet "misc_smp" "no"
         else
             iniSet "device_video_output" "overlay"
             iniSet "display_aspectx" 16
