@@ -205,6 +205,8 @@ function _mapPackage() {
         LINUX-HEADERS)
             if isPlatform "rpi"; then
                 pkg="raspberrypi-kernel-headers"
+            elif isPlatform "armbian"; then
+                pkg="$(dpkg-query -W -f='${db:Status-Abbrev}${Package}' linux-image* | grep '^ii' | sed -n 's/.*linux-image-\(.*\)/\1/p')"
             elif [[ -z "$__os_ubuntu_ver" ]]; then
                 pkg="linux-headers-$(uname -r)"
             else

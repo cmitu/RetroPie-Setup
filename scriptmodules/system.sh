@@ -258,6 +258,14 @@ function get_os_version() {
             ;;
     esac
 
+    # Armbian has both Debian/Ubuntu variants, so configure detection after
+    if [[ -f /etc/armbian-release ]]; then
+        __platform_flags+=" armbian"
+        __os_ver=$(sed -n 's/^VERSION=//p' /etc/armbian-release)
+        local __os_branch=$(sed -n 's/^BRANCH=//p' /etc/armbian-release)
+        __os_desc="Armbian $__os_ver ($__os_codename/$__os_branch)"
+    fi
+
     [[ -n "$error" ]] && fatalError "$error\n\n$(lsb_release -sidrc)"
 
     # add 32bit/64bit to platform flags
