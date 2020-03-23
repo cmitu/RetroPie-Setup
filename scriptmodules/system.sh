@@ -151,6 +151,10 @@ function get_os_version() {
 
             # Debian unstable is not officially supported though
             if [[ "$__os_release" == "unstable" ]]; then
+                __os_debian_ver=12
+            fi
+
+            if [[ "$__os_release" == "testing" ]]; then
                 __os_debian_ver=11
             fi
 
@@ -254,13 +258,16 @@ function get_os_version() {
             ;;
     esac
 
-    [[ -n "$error" ]] && fatalError "$error\n\n$(lsb_release -idrc)"
+    [[ -n "$error" ]] && fatalError "$error\n\n$(lsb_release -sidrc)"
 
     # add 32bit/64bit to platform flags
     __platform_flags+=" $(getconf LONG_BIT)bit"
 
     # configure Raspberry Pi graphics stack
     isPlatform "rpi" && get_rpi_video
+
+    # configure the RK3399 graphics stack
+    isPlatform "rk3399" && get_rk3399_video
 }
 
 function get_retropie_depends() {
@@ -303,10 +310,31 @@ function get_rpi_video() {
     export PKG_CONFIG_PATH="$pkgconfig"
 }
 
+function get_rk3399_video() {
+    # Rockchip supports either the Mali proprietary drivers or the Mesa Panfrost drivers
+    if [[ -z "$__has_kms" ]]; then
+        [[ -d "/sys/module/panfrost" ]] && __has_kms=1
+    fi
+
+    if [[ "$__has_kms" -eq 1 ]]; then
+        __platform_flags+=" mesa kms"
+    else
+        __platform_flags+=" mali gles3"
+    fi
+}
+
 function get_platform() {
     local architecture="$(uname --machine)"
     if [[ -z "$__platform" ]]; then
-        case "$(sed -n '/^Hardware/s/^.*: \(.*\)/\1/p' < /proc/cpuinfo)" in
+        local board_model=$(sed -n '/^Hardware/s/^.*: \(.*\)/\1/p' < /proc/cpuinfo)
+
+        # Some platforms don't export the HW info in the CPU flags,
+        # so try extracting it from the device-tree information.
+        if [[ -z "$board_model" ]]; then
+            board_model=$(tr -d '\0' </proc/device-tree/model)
+        fi
+
+        case "$board_model" in
             BCM*)
                 # calculated based on information from https://github.com/AndrewFromMelbourne/raspberry_pi_revision
                 local rev="0x$(sed -n '/^Revision/s/^.*: \(.*\)/\1/p' < /proc/cpuinfo)"
@@ -352,6 +380,9 @@ function get_platform() {
                 ;;
             "Allwinner sun8i Family")
                 __platform="armv7-mali"
+                ;;
+            "FriendlyElec NanoPi M4")
+                __platform="rk3399"
                 ;;
             *)
                 case $architecture in
@@ -468,4 +499,9 @@ function platform_vero4k() {
     __default_cpu_flags="-mcpu=cortex-a7 -mfpu=neon-vfpv4"
     __default_cflags="-I/opt/vero3/include -L/opt/vero3/lib"
     __platform_flags="arm armv7 neon mali gles"
+}
+
+function platform_rk3399() {
+    __default_cpu_flags="-O2 -march=armv8-a+crypto+simd -mtune=cortex-a72.cortex-a53"
+    __platform_flags="armv8 aarch64 rk3399 gles big.little"
 }
