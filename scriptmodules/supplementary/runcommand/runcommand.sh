@@ -1172,7 +1172,12 @@ function show_launch() {
             "$CONF_ROOT/launching"
         )
     fi
-    [[ "$IS_PORT" -eq 1 ]] && images+=("$CONFIGDIR/ports/launching")
+    if [[ "$IS_PORT" -eq 1 ]]; then
+        images+=(
+            "$CONFIGDIR/ports/$SYSTEM/launching"
+            "$CONFIGDIR/ports/launching")
+        )
+    fi
     images+=("$CONFIGDIR/all/launching")
 
     local image
