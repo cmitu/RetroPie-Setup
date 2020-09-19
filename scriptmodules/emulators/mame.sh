@@ -56,7 +56,7 @@ function build_mame() {
     local params=(NOWERROR=1 ARCHOPTS=-U_FORTIFY_SOURCE)
 
     # Prefer Python3 when available
-    `which python3` && params+=(PYTHON_EXECUTABLE="$(which python3)")
+    command -v python3 >/dev/null 2>&1 && params+=(PYTHON_EXECUTABLE=python3)
 
     make "${params[@]}"
 
