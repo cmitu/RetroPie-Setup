@@ -387,13 +387,20 @@ function gitPullOrClone() {
     local dir="$1"
     local repo="$2"
     local branch="$3"
-    [[ -z "$branch" ]] && branch="master"
     local commit="$4"
     local depth="$5"
     if [[ -z "$depth" && "$__persistent_repos" -ne 1 && -z "$commit" ]]; then
         depth=1
     else
         depth=0
+    fi
+
+    # Default branch could be different than 'master', ask the remote repo for it
+    if [[ -z "$branch" ]]; then
+        branch=$(runCmd git ls-remote --symref "$repo" HEAD | cut -s -d'/' -f3 | cut -d$'\t' -f1)
+        if [[ -z "$branch" ]]; then
+            branch="master"
+        fi
     fi
 
     if [[ -d "$dir/.git" ]]; then
