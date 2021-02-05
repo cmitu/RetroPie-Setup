@@ -399,3 +399,37 @@ function _set_config_option_retroarch()
         iniSet "$option" "$value"
     fi
 }
+
+# Resets the `retroarch.cfg` for a system
+# @parm system - the system to reset. If empty, reset the global RetroArch config
+function _reset_system_retro_config_retroarch() {
+    local sys="$1"
+    local cfg
+    if [[ -z "$sys" ]]; then
+        printMsgs console "Resetting global RetroArch configuration"
+        cfg="$configdir/all/retroarch.cfg"
+    else
+        printMsgs console "Resetting $sys RetroArch configuration"
+        cfg="$configdir/$sys/retroarch.cfg"
+    fi
+
+    [[ -f "$cfg" ]] && mv "$cfg"  "${cfg}_$(date +"%Y.%m.%d_%H.%M").bak"
+
+    if [[ -f "$cfg.rp-dist" ]]; then
+        copyDefaultConfig "$cfg.rp-dist" "$cfg"
+    else
+        # No .rp-dist available, so it's not the global conf
+        if [[ -n "$sys" ]]; then
+            ensureSystemretroconfig "$sys"
+        fi
+    fi
+}
+
+# Find the core 'library_name' for a libretro core
+# This is used by RetroArch to store core related configurations
+function _get_core_name_retroarch() {
+    local core_file="$1"
+    [[ -z "$core_file" ]] && return ""
+
+    LD_LIBRARY_PATH="$(dirname "$core_file")" python3 "$md_data/get_libretro_name.py" "$core_file"
+}
