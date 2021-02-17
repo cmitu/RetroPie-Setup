@@ -41,7 +41,8 @@ _EOF_
 }
 
 function restart_samba() {
-    service samba restart || service smbd restart
+    systemctl restart smbd
+    systemctl restart nmbd
 }
 
 function install_shares_samba() {
