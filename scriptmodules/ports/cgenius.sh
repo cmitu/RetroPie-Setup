@@ -29,7 +29,9 @@ function sources_cgenius() {
 }
 
 function build_cgenius() {
-    cmake -DUSE_SDL2=yes -DCMAKE_INSTALL_PREFIX="$md_inst" -DNOTYPESAVE=on -DUSE_BOOST=no
+    local params="-DUSE_SDL2=yes -DCMAKE_INSTALL_PREFIX="$md_inst" -DNOTYPESAVE=on -DUSE_BOOST=no"
+    (! isPlatform "x11" && ! isPlatform "mesa") && params+=" -DUSE_OPENGL=no"
+    cmake "$params" .
     make
     md_ret_require="$md_build/src/CGeniusExe"
 }
