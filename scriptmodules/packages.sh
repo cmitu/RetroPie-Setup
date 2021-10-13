@@ -260,6 +260,9 @@ function rp_callModule() {
                 pushed=$?
                 "configure_${md_id}"
             fi
+            # when removing a libretro core, update the core file registration in RA
+            [[ "$md_id" == lr-* ]] && setRetroArchCoreInfo
+
             rm -rf "$md_inst"
             printMsgs "console" "Removed directory $md_inst"
             ;;
@@ -334,6 +337,11 @@ function rp_callModule() {
         if ! fnExists "install_${md_id}" && [[ "$mode" == "build" ]]; then
             rp_setPackageInfo "$md_idx" "source"
         fi
+    fi
+
+    #  for libretro core register the core with RetroArch
+    if [[ "$md_id" == lr-* && "$mode" == "configure" ]]; then
+        setRetroArchCoreInfo
     fi
 
     # some information messages were returned

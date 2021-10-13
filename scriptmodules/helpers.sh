@@ -913,6 +913,27 @@ function setRetroArchCoreOption() {
     chown $user:$user "$configdir/all/retroarch-core-options.cfg"
 }
 
+## @fn setRetroArchCoreInfo
+## @brief Sets up symlinks for libretro core(s) included in a package in `$configdir/all/retroarch/cores`.
+function setRetroArchCoreInfo() {
+    [[ -z "$md_inst" ]] && return
+
+    local core_name
+    local core_path
+    while read core_path; do
+        core_name=`basename -s ".so" $core_path`
+        # on install, symlink the core file(s) to the location where RetroArch expects it
+        if [[ "$md_mode" == "install" && -f "$configdir/all/retroarch/cores/${core_name}.info" ]]; then
+            ln -sf "$core_path" "$configdir/all/retroarch/cores/${core_name}.so"
+        fi
+
+        # on removal, delete the core file(s) symlinks from RetroArch's core folder
+        if [[ "$md_mode" == "remove" && -f "$configdir/all/retroarch/cores/${core_name}.so" ]]; then
+            rm -f "$configdir/all/retroarch/cores/${core_name}.so"
+        fi
+    done < <(find "$md_inst" -maxdepth 1 -type f -name "*_libretro.so")
+}
+
 ## @fn setConfigRoot()
 ## @param dir directory under $configdir to use
 ## @brief Sets module config root `$md_conf_root` to subfolder from `$configdir`

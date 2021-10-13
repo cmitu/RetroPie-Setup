@@ -124,6 +124,14 @@ function _package_minimal_assets_retroarch() {
     tar cvzf "$archive" -C "$md_build/assets" ozone menu_widgets xmb/monochrome
 }
 
+function update_core_info_retroarch() {
+    local dir="$configdir/all/retroarch/cores"
+    # remove if not a git repository and do a fresh checkout
+    [[ ! -d "$dir/.git" ]] && rm -fr "$dir"
+    gitPullOrClone "$configdir/all/retroarch/cores" https://github.com/libretro/libretro-core-info.git
+    chown -R $user:$user "$dir"
+}
+
 function configure_retroarch() {
     [[ "$md_mode" == "remove" ]] && return
 
@@ -145,6 +153,9 @@ function configure_retroarch() {
 
     # install minimal assets
     install_minimal_assets_retroarch
+
+    # update core information
+    update_core_info_retroarch
 
     local config="$(mktemp)"
 
