@@ -1,8 +1,8 @@
 diff --git a/retroarch.c b/retroarch.c
-index 0642c8c779..b00780047d 100644
+index b3040f3..54df39a 100644
 --- a/retroarch.c
 +++ b/retroarch.c
-@@ -2596,7 +2596,8 @@ int generic_menu_entry_action(
+@@ -1617,7 +1617,8 @@ int generic_menu_entry_action(
                    entry->label, entry->type, i, entry->entry_idx);
           break;
        case MENU_ACTION_SEARCH:
