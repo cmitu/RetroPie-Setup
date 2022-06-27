@@ -30,8 +30,9 @@ function gui_audiosettings() {
     # The list of ALSA cards/devices depends on the 'snd-bcm2385' module parameter 'enable_compat_alsa'
     # * enable_compat_alsa: true  - single soundcard, output is routed based on the `numid` control
     # * enable_compat_alsa: false - one soundcard per output type (HDMI/Headphones)
-    # If PulseAudio is enabled, then try to configure it and leave ALSA alone
-    if _pa_cmd_audiosettings systemctl -q --user is-enabled pulseaudio.socket; then
+    # If PulseAudio is enabled, then try to configure it
+    if _pa_cmd_audiosettings systemctl -q --user is-enabled pulseaudio.service && \
+        _pa_cmd_audiosettings systemctl -q --user is-active pulseaudio.service; then
         _pulseaudio_audiosettings
     elif aplay -l | grep -q "bcm2835 ALSA"; then
         _bcm2835_alsa_compat_audiosettings
@@ -235,12 +236,14 @@ function _toggle_pulseaudio_audiosettings() {
 
     if [[ "$state" == "on" ]]; then
         _pa_cmd_audiosettings systemctl --user unmask pulseaudio.socket
-        _pa_cmd_audiosettings systemctl --user start  pulseaudio.service
+        _pa_cmd_audiosettings systemctl --user unmask pulseaudio.service
+        _pa_cmd_audiosettings systemctl --user --now start  pulseaudio.service
     fi
 
     if [[ "$state" == "off" ]]; then
         _pa_cmd_audiosettings systemctl --user mask pulseaudio.socket
-        _pa_cmd_audiosettings systemctl --user stop pulseaudio.service
+        _pa_cmd_audiosettings systemctl --user --now stop pulseaudio.service
+        _pa_cmd_audiosettings systemctm --user mask pulseaudio.service
     fi
 }
 
