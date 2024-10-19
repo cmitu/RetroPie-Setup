@@ -1049,19 +1049,58 @@ function defaultRAConfig() {
     rm "$config"
 }
 
+## @fn getLibretroCoreName
+## @param the name of the RetroPie libretro module
+## @brief Prints the name of the Libretro core corresponding to the RetroPie `lr-` module
+## by using the core info files and the core filename
+## @note @em Module has to be installed for this function to work
+function getLibretroCoreName() {
+    local module=$1
+    [[ -z "$module" ]] && return
+
+    local core_path="$(rp_getInstallPath $module)"
+    [[ ! -d "$core_path" ]] && return
+
+    local core_file="$(find $core_path -type f -name \*libretro.so -printf "%f" -quit)"
+    [[ -z "$core_file" ]] && return
+
+    core_file="$(basename $core_file .so)"
+    iniConfig " = " "\"" "$configdir/all/retroarch/cores/${core_file}.info"
+    iniGet "corename"
+    echo $ini_value
+}
+
 ## @fn setRetroArchCoreOption()
 ## @param option option to set
 ## @param value value to set
-## @brief Sets a retroarch core option in `$configdir/all/retroarch-core-options.cfg`.
+## @param core_name the name of the libretro core (optional).
+##        If not set, the function will call @see getLibretroCoreName to get it
+## @brief Sets a Retroarch core option in:
+##  - `$configdir/all/retroarch-core-options.cfg` when global options file is enabled or core name cannot be determined
+##  - `$configdir/all/retroarch/<CoreName>/<CoreName>.opt` otherwise
 function setRetroArchCoreOption() {
+    local global_core_options="true"
     local option="$1"
     local value="$2"
-    iniConfig " = " "\"" "$configdir/all/retroarch-core-options.cfg"
+    local core_name="$3"
+    local core_options_file="$configdir/all/retroarch-core-options.cfg"
+
+    # see if global core options is enabled
+    iniConfig " = " "\"" "$configdir/all/retroarch.cfg"
+    iniGet "global_core_options"
+    [[ -n "$ini_value" ]] && global_core_options="$ini_value"
+
+    # when using a per-core options file, the file is core name dependant
+    if [[ "$global_core_options" == "false" && "$md_id" =~ "lr-" ]]; then
+        [[ -z "$core_name" ]] && core_name="$(getLibretroCoreName $md_id)"
+        [[ ! -z "$core_name" ]] && core_options_file="$configdir/all/retroarch/${core_name}/${core_name}.opt"
+    fi
+    iniConfig " = " "\"" "$core_options_file"
     iniGet "$option"
     if [[ -z "$ini_value" ]]; then
         iniSet "$option" "$value"
     fi
-    chown "$__user":"$__group" "$configdir/all/retroarch-core-options.cfg"
+    chown "$__user":"$__group" "$core_options_file"
 }
 
 ## @fn setConfigRoot()
