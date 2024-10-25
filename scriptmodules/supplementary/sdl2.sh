@@ -14,6 +14,7 @@ rp_module_desc="SDL (Simple DirectMedia Layer) v2.x"
 rp_module_licence="ZLIB https://raw.githubusercontent.com/libsdl-org/SDL/main/LICENSE.txt"
 rp_module_section="depends"
 rp_module_flags=""
+rp_module_repo="git https://github.com/RetroPie/sdl.git :get_branch_sdl2"
 
 function get_ver_sdl2() {
     if [[ "$__os_debian_ver" -ge 11 ]]; then
@@ -21,6 +22,10 @@ function get_ver_sdl2() {
     else
         echo "2.0.10"
     fi
+}
+
+function get_branch_sdl2() {
+    echo "retropie-$(get_ver_sdl2)"
 }
 
 function get_pkg_ver_sdl2() {
@@ -67,7 +72,7 @@ function depends_sdl2() {
 function sources_sdl2() {
     local ver="$(get_ver_sdl2)"
     local pkg_ver="$(get_pkg_ver_sdl2)"
-    local branch="retropie-${ver}"
+    local branch="$(get_branch_sdl2)"
 
     gitPullOrClone "$md_build/$pkg_ver" https://github.com/RetroPie/SDL.git "$branch"
     cd "$pkg_ver"
@@ -145,15 +150,16 @@ function install_sdl2() {
 }
 
 function __binary_url_sdl2() {
-    rp_hasBinaries && echo "$__binary_url/libsdl2-dev_$(get_pkg_ver_sdl2)_armhf.deb"
+    rp_hasBinaries && echo "$__binary_url/libsdl2-dev_$(get_pkg_ver_sdl2)_$(get_arch_sdl2).deb"
 }
 
 function install_bin_sdl2() {
     local tmp="$(mktemp -d)"
+    local arch="$(get_arch_sdl2)"
     pushd "$tmp" >/dev/null
     local ret=1
-    if downloadAndVerify "$__binary_url/libsdl2-dev_$(get_pkg_ver_sdl2)_armhf.deb" && \
-       downloadAndVerify "$__binary_url/libsdl2-2.0-0_$(get_pkg_ver_sdl2)_armhf.deb"; then
+    if downloadAndVerify "$__binary_url/libsdl2-dev_$(get_pkg_ver_sdl2)_${arch}.deb" && \
+       downloadAndVerify "$__binary_url/libsdl2-2.0-0_$(get_pkg_ver_sdl2)_${arch}.deb"; then
         install_sdl2
         ret=0
     fi
