@@ -45,7 +45,7 @@ function install_controlblock() {
 }
 
 function gui_controlblock() {
-    local cmd=(dialog --backtitle "$__backtitle" --menu "Choose an option." 22 86 16)
+    local cmd=(dialog --backtitle "$__backtitle" --cancel-label "Exit" --menu "Choose an option." 22 86 16)
     local options=(
         1 "Enable ControlBlock driver"
         2 "Disable ControlBlock driver"

@@ -104,7 +104,7 @@ function remove_autostart() {
 }
 
 function gui_autostart() {
-    cmd=(dialog --backtitle "$__backtitle" --menu "Choose the desired boot behaviour." 22 76 16)
+    cmd=(dialog --backtitle "$__backtitle" --cancel-label Exit --menu "Choose the desired boot behaviour." 22 76 16)
     local has_pegasus=0
     local has_kodi=0
 

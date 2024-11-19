@@ -165,7 +165,7 @@ function scrape_chosen_scraper() {
         return
     fi
 
-    local cmd=(dialog --backtitle "$__backtitle" --checklist "Select ROM Folders" 22 76 16)
+    local cmd=(dialog --backtitle "$__backtitle" --cancel-label "Back" --checklist "Select ROM Folders" 22 76 16)
     local choice=($("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty))
 
     [[ ${#choice[@]} -eq 0 ]] && return

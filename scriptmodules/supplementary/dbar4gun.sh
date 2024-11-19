@@ -264,7 +264,7 @@ function _menu_set_resolution() {
 
 function gui_dbar4gun() {
     local title=$($md_inst/bin/dbar4gun version)
-    local cmd=(dialog --backtitle "$__backtitle" --menu "$title" 22 86 16)
+    local cmd=(dialog --backtitle "$__backtitle" --cancel-label "Exit" --menu "$title" 22 86 16)
     local options=(
         1 "Enable dbar4gun"
         2 "Disable dbar4gun"

@@ -53,7 +53,7 @@ function choose_page_docsview() {
 function gui_docsview() {
     local dir="$rootdir/RetroPie-Docs"
     while true; do
-        local cmd=(dialog --backtitle "$__backtitle" --menu "RetroPie-Setup Docs Viewer" 22 76 16)
+        local cmd=(dialog --backtitle "$__backtitle" --cancel-menu "Exit" --menu "RetroPie-Setup Docs Viewer" 22 76 16)
         local options=()
         if [[ -d "$dir" ]]; then
             options=(

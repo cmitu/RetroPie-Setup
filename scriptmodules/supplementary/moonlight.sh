@@ -343,7 +343,7 @@ function apps_gui_moonlight() {
         )
 
         # show main menu
-        cmd=(dialog --backtitle "$__backtitle" --default-item "$default" --item-help --menu "Remote Apps" 13 60 16)
+        cmd=(dialog --backtitle "$__backtitle" --cancel-label "Exit" --default-item "$default" --item-help --menu "Remote Apps" 13 60 16)
         choice=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
         default="$choice"
         case "$choice" in

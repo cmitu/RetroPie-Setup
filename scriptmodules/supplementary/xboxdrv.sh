@@ -73,7 +73,7 @@ function controllers_xboxdrv() {
 
     [[ -z "$controllers" ]] && controllers="$(def_controllers_xboxdrv)"
 
-    local cmd=(dialog --backtitle "$__backtitle" --default-item "$controllers" --menu "Select the number of controllers to enable" 22 86 16)
+    local cmd=(dialog --backtitle "$__backtitle" --cancel-label Exit --default-item "$controllers" --menu "Select the number of controllers to enable" 22 86 16)
     local options=(
         1 "1 controller"
         2 "2 controllers"

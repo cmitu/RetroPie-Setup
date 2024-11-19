@@ -352,9 +352,9 @@ function udev_bluetooth() {
     done < <(list_paired_bluetooth)
 
     if [[ ${#devices[@]} -eq 0 ]] ; then
-        printMsgs "dialog" "There are no paired bluetooth devices."
+        printMsgs "dialog" "There are no paired Bluetooth devices."
     else
-        local cmd=(dialog --backtitle "$__backtitle" --menu "Please choose the bluetooth device you would like to create a udev rule for" 22 76 16)
+        local cmd=(dialog --backtitle "$__backtitle" --menu "Please choose the Bluetooth device you would like to create a udev rule for" 22 76 16)
         choice=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
         [[ -z "$choice" ]] && return
         name="${devices[$choice]}"
@@ -435,7 +435,7 @@ function gui_bluetooth() {
     while true; do
         local connect_mode="$(_get_connect_mode)"
 
-        local cmd=(dialog --backtitle "$__backtitle" --menu "Configure Bluetooth Devices" 22 76 16)
+        local cmd=(dialog --backtitle "$__backtitle" --cancel-label Exit --menu "Configure Bluetooth Devices" 22 76 16)
         local options=(
             P "Pair and Connect to Bluetooth Device"
             X "Remove Bluetooth Device"

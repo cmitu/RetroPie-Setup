@@ -40,7 +40,7 @@ function gui_consolefont() {
     local options
     local choice
 
-    cmd=(dialog --backtitle "$__backtitle" --menu "Choose the desired console font configuration: \n(Current configuration: $(check_consolefont))" 22 86 16)
+    cmd=(dialog --backtitle "$__backtitle" --cancel-label Exit --menu "Choose the desired console font configuration: \n(Current configuration: $(check_consolefont))" 22 86 16)
     options=(
         1 "Large (VGA 16x32)"
         2 "Large (TerminusBold 16x32)"

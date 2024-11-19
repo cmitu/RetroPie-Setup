@@ -78,7 +78,7 @@ _EOF_
 }
 
 function gui_steamcontroller() {
-    local cmd=(dialog --backtitle "$__backtitle" --menu "Choose an option." 22 86 16)
+    local cmd=(dialog --backtitle "$__backtitle" --cancel-menu "Exit" --menu "Choose an option." 22 86 16)
     local options=(
         1 "Enable Steamcontroller (Xbox controller mode)"
         2 "Enable Steamcontroller (Desktop mouse/keyboard mode)"

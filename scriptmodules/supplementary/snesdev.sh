@@ -76,7 +76,7 @@ function remove_snesdev() {
 }
 
 function gui_snesdev() {
-    local cmd=(dialog --backtitle "$__backtitle" --menu "Choose an option." 22 86 16)
+    local cmd=(dialog --backtitle "$__backtitle" --cancel-label "Exit" --menu "Choose an option." 22 86 16)
     local options=(
         1 "Enable SNESDev on boot and SNESDev keyboard mapping (polling pads and button)"
         2 "Enable SNESDev on boot and SNESDev keyboard mapping (polling only pads)"

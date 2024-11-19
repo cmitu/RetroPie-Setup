@@ -266,7 +266,7 @@ clear
 tput civis
 "$md_inst/emulationstation.sh" "\$@"
 if [[ \$? -eq 139 ]]; then
-    dialog --cr-wrap --no-collapse --msgbox "Emulation Station crashed!\n\nIf this is your first boot of RetroPie - make sure you are using the correct image for your system.\n\\nCheck your rom file/folder permissions and if running on a Raspberry Pi, make sure your gpu_split is set high enough and/or switch back to using carbon theme.\n\nFor more help please use the RetroPie forum." 20 60 >/dev/tty
+    dialog --cr-wrap --no-collapse --msgbox "EmulationStation crashed!\n\nIf this is your first boot of RetroPie - make sure you are using the correct image for your system.\n\\nCheck your rom file/folder permissions and if running on a Raspberry Pi, make sure your gpu_split is set high enough and/or switch back to using carbon theme.\n\nFor more help please use the RetroPie forum." 20 60 >/dev/tty
 fi
 tput cnorm
 _EOF_
@@ -344,7 +344,7 @@ function gui_emulationstation() {
     local options
     while true; do
         local options=(
-            1 "Clear/Reset Emulation Station input configuration"
+            1 "Clear/Reset EmulationStation input configuration"
         )
 
         if [[ "$disable" -eq 0 ]]; then
@@ -359,14 +359,14 @@ function gui_emulationstation() {
             options+=(3 "Swap A/B Buttons in ES (Currently: Swapped)")
         fi
 
-        local cmd=(dialog --backtitle "$__backtitle" --default-item "$default" --menu "Choose an option" 22 76 16)
+        local cmd=(dialog --backtitle "$__backtitle" --cancel-label Exit --default-item "$default" --menu "Choose an option" 22 76 16)
         local choice=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
         [[ -z "$choice" ]] && break
         default="$choice"
 
         case "$choice" in
             1)
-                if dialog --defaultno --yesno "Are you sure you want to reset the Emulation Station controller configuration ? This will wipe all controller configs for ES and it will prompt to reconfigure on next start" 22 76 2>&1 >/dev/tty; then
+                if dialog --defaultno --yesno "Are you sure you want to reset the EmulationStation controller configuration ? This will wipe all controller configs and it will prompt to reconfigure on next start" 22 76 2>&1 >/dev/tty; then
                     clear_input_emulationstation
                     printMsgs "dialog" "$(_get_input_cfg_emulationstation) has been reset to default values."
                 fi
@@ -381,7 +381,7 @@ function gui_emulationstation() {
                 local ra_swap="false"
                 getAutoConf "es_swap_a_b" && ra_swap="true"
                 iniSet "menu_swap_ok_cancel_buttons" "$ra_swap" "$configdir/all/retroarch.cfg"
-                printMsgs "dialog" "You will need to reconfigure you controller in Emulation Station for the changes to take effect."
+                printMsgs "dialog" "You will need to reconfigure you controller in EmulationStation for the changes to take effect."
                 ;;
         esac
     done

@@ -141,7 +141,7 @@ function choose_path_splashscreen() {
         1 "RetroPie splashscreens"
         2 "Own/Extra splashscreens (from $datadir/splashscreens)"
     )
-    local cmd=(dialog --backtitle "$__backtitle" --menu "Choose an option." 22 86 16)
+    local cmd=(dialog --backtitle "$__backtitle" --cancel-label "Back" --menu "Choose an option." 22 86 16)
     local choice=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
     [[ "$choice" -eq 1 ]] && echo "$md_inst"
     [[ "$choice" -eq 2 ]] && echo "$datadir/splashscreens"
@@ -191,7 +191,7 @@ function choose_splashscreen() {
         printMsgs "dialog" "There are no splashscreens installed in $path"
         return
     fi
-    local cmd=(dialog --backtitle "$__backtitle" --menu "Choose splashscreen." 22 76 16)
+    local cmd=(dialog --backtitle "$__backtitle" --cancel-label "Back" --menu "Choose splashscreen." 22 76 16)
     local choice=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
     [[ -n "$choice" ]] && echo "$path/${options[choice*2+1]}"
 }
@@ -204,7 +204,7 @@ function randomize_splashscreen() {
         3 "Randomize all splashscreens"
         4 "Randomize /etc/splashscreen.list"
     )
-    local cmd=(dialog --backtitle "$__backtitle" --menu "Choose an option." 22 86 16)
+    local cmd=(dialog --backtitle "$__backtitle" --cancel-label "Back" --menu "Choose an option." 22 86 16)
     local choice=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
     iniConfig "=" '"' "$configdir/all/$md_id.cfg"
     chown "$__user":"$__group" "$configdir/all/$md_id.cfg"
@@ -283,7 +283,7 @@ function download_extra_splashscreen() {
 }
 
 function gui_splashscreen() {
-    local cmd=(dialog --backtitle "$__backtitle" --menu "Choose an option." 22 86 16)
+    local cmd=(dialog --backtitle "$__backtitle" --cancel-label "Exit" --menu "Choose an option." 22 86 16)
     while true; do
         local enabled=0
         [[ -n "$(find "/etc/systemd/system/"*".wants" -type l -name "asplashscreen.service")" ]] && enabled=1

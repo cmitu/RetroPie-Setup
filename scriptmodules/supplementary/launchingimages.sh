@@ -80,7 +80,7 @@ function _dialog_menu_launchingimages() {
         options+=( "$i" "$opt" )
         ((i++))
     done
-    choice=$(dialog --backtitle "$__backtitle" --menu "$text" 22 86 16 "${options[@]}" 2>&1 >/dev/tty) || return
+    choice=$(dialog --backtitle "$__backtitle" --cancel-label "Exit" --menu "$text" 22 86 16 "${options[@]}" 2>&1 >/dev/tty) || return
     echo "${options[choice*2-1]}"
 }
 

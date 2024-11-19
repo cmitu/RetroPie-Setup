@@ -101,7 +101,7 @@ function gui_usbromservice() {
     local options
     local choice
     while true; do
-        cmd=(dialog --backtitle "$__backtitle" --menu "Choose from an option below." 22 86 16)
+        cmd=(dialog --backtitle "$__backtitle" --cancel-label "Exit" --menu "Choose from an option below." 22 86 16)
         options=(
             1 "Enable USB ROM Service scripts"
             2 "Disable USB ROM Service scripts"

@@ -10,7 +10,7 @@
 #
 
 rp_module_id="wifi"
-rp_module_desc="Configure WiFi"
+rp_module_desc="Configure Wi-Fi"
 rp_module_section="config"
 rp_module_flags="!x11"
 
@@ -27,7 +27,7 @@ function _get_interface_wifi() {
 }
 
 function _get_mgmt_tool_wifi() {
-    # get the WiFi connection manager
+    # get the Wi-Fi connection manager
     if systemctl -q is-active NetworkManager.service; then
         echo "nm"
     else
@@ -96,7 +96,7 @@ function connect_wifi() {
     local options=()
     i=0
     _set_interface_wifi $iface up 2>/dev/null
-    dialog --infobox "\nScanning for WiFi networks..." 5 40 > /dev/tty
+    dialog --infobox "\nScanning for Wi-Fi networks..." 5 40 > /dev/tty
     sleep 1
 
     while read essid; read type; do
@@ -107,7 +107,7 @@ function connect_wifi() {
     done < <(list_wifi $iface)
     options+=("H" "Hidden ESSID")
 
-    local cmd=(dialog --backtitle "$__backtitle" --menu "Please choose the WiFi network you would like to connect to" 22 76 16)
+    local cmd=(dialog --backtitle "$__backtitle" --menu "Please choose the Wi-Fi network you would like to connect to" 22 76 16)
     choice=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
     [[ -z "$choice" ]] && return
 
@@ -115,7 +115,7 @@ function connect_wifi() {
     if [[ "$choice" == "H" ]]; then
         essid=$(inputBox "ESSID" "" 4)
         [[ -z "$essid" ]] && return
-        cmd=(dialog --backtitle "$__backtitle" --nocancel --menu "Please choose the WiFi type" 12 40 6)
+        cmd=(dialog --backtitle "$__backtitle" --nocancel --menu "Please choose the Wi-Fi type" 12 40 6)
         options=(
             wpa "WPA/WPA2"
             wep "WEP"
@@ -137,7 +137,7 @@ function connect_wifi() {
             key_min=5
         fi
 
-        cmd=(inputBox "WiFi key/password" "" $key_min)
+        cmd=(inputBox "Wi-Fi key/password" "" $key_min)
         local key_ok=0
         while [[ $key_ok -eq 0 ]]; do
             key=$("${cmd[@]}") || return
@@ -250,7 +250,7 @@ function _check_country_wifi() {
     local country
     country="$(raspi-config nonint get_wifi_country)"
     if [[ -z "$country" ]]; then
-        if dialog --defaultno --yesno "You don't currently have your WiFi country set.\n\nOn a Raspberry Pi 3B+ and later your WiFi will be disabled until the country is set. You can do this via raspi-config which is available from the RetroPie menu in Emulation Station. Once in raspi-config you can set your country via menu 5 (Localisation Options)\n\nDo you want me to launch raspi-config for you now ?" 22 76 2>&1 >/dev/tty; then
+        if dialog --defaultno --yesno "You don't currently have your Wi-Fi Country set.\n\nOn a Raspberry Pi 3B+ and later your Wi-Fi will be disabled until the Country is set. You can do this via raspi-config which is available from the RetroPie menu in EmulationStation. Once in raspi-config you can set your country via menu 5 (Localisation Options)\n\nDo you want me to launch raspi-config for you now ?" 22 76 2>&1 >/dev/tty; then
             raspi-config
         fi
     fi
@@ -270,16 +270,16 @@ function gui_wifi() {
     while true; do
         local ip_current="$(getIPAddress)"
         local ip_wlan="$(getIPAddress $iface)"
-        local cmd=(dialog --backtitle "$__backtitle" --colors --cancel-label "Exit" --item-help --help-button --default-item "$default" --title "Configure WiFi" --menu "Current IP: \Zb${ip_current:-(unknown)}\ZB\nWireless IP: \Zb${ip_wlan:-(unknown)}\ZB\nWireless ESSID: \Zb$(iwgetid -r || echo "none")\ZB" 22 76 16)
+        local cmd=(dialog --backtitle "$__backtitle" --colors --cancel-label "Exit" --item-help --help-button --default-item "$default" --title "Configure Wi-Fi" --menu "Current IP: \Zb${ip_current:-(unknown)}\ZB\nWireless IP: \Zb${ip_wlan:-(unknown)}\ZB\nWireless ESSID: \Zb$(iwgetid -r || echo "none")\ZB" 22 76 16)
         local options=(
-            1 "Connect to WiFi network"
-            "1 Connect to your WiFi network"
-            2 "Disconnect/Remove WiFi config"
-            "2 Disconnect and remove any WiFi configuration"
-            3 "Import WiFi credentials from wifikeyfile.txt"
+            1 "Connect to Wi-Fi network"
+            "1 Connect to your Wi-Fi network"
+            2 "Disconnect/Remove Wi-Fi config"
+            "2 Disconnect and remove any Wi-Fi configuration"
+            3 "Import Wi-Fi credentials from wifikeyfile.txt"
             "3 Will import the SSID (network name) and PSK (password) from the 'wifikeyfile.txt' file on the boot partition
 
-The file should contain two lines as follows\n\nssid = \"YOUR WIFI SSID\"\npsk = \"YOUR PASSWORD\""
+The file should contain two lines as follows\n\nssid = \"YOUR WI-FI SSID\"\npsk = \"YOUR PASSWORD\""
         )
 
         local choice=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
@@ -298,7 +298,7 @@ The file should contain two lines as follows\n\nssid = \"YOUR WIFI SSID\"\npsk =
                     connect_wifi $iface
                     ;;
                 2)
-                    dialog --defaultno --yesno "This will remove the WiFi configuration and stop the WiFi.\n\nAre you sure you want to continue ?" 12 60 2>&1 >/dev/tty
+                    dialog --defaultno --yesno "This will remove the Wi-Fi configuration and stop the Wi-Fi.\n\nAre you sure you want to continue ?" 12 60 2>&1 >/dev/tty
                     [[ $? -ne 0 ]] && continue
                     remove_${mgmt_tool}_wifi $iface
                     ;;

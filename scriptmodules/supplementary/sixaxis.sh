@@ -40,7 +40,7 @@ function build_sixaxis() {
 
 function gui_sixaxis() {
     local sixaxis_config="$md_conf_root/all/sixaxis_timeout.cfg"
-    local cmd=(dialog --backtitle "$__backtitle" --menu "Choose an option." 22 86 16)
+    local cmd=(dialog --backtitle "$__backtitle" --cancel-label "Exit" --menu "Choose an option." 22 86 16)
     local options=(
         1 "Enable support for third-party controllers"
         2 "Disable support for third-party controllers"

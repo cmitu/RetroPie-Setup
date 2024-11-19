@@ -40,7 +40,7 @@ function rps_retronet_loadconfig() {
 }
 
 function rps_retronet_mode() {
-    cmd=(dialog --backtitle "$__backtitle" --menu "Please set the netplay mode." 22 76 16)
+    cmd=(dialog --backtitle "$__backtitle" --cancel-label "Exit" --menu "Please set the netplay mode." 22 76 16)
     options=(1 "Set as HOST"
              2 "Set as CLIENT" )
     choice=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)

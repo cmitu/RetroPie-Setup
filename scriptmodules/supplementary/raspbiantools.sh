@@ -163,7 +163,7 @@ function enable_zram_raspbiantools() {
         service zramswap start
     elif [[ "$__os_id" == "Ubuntu" ]]; then
         aptInstall zram-config
-        # Ubuntu has a automatic zram configuration
+        # Ubuntu has an automatic zram configuration
     fi
 }
 
@@ -179,7 +179,7 @@ function gui_raspbiantools() {
     while true; do
         local zram_status="Enable"
         [[ $(cat /proc/swaps) == *zram* ]] && zram_status="Disable"
-        local cmd=(dialog --backtitle "$__backtitle" --menu "Choose an option" 22 76 16)
+        local cmd=(dialog --backtitle "$__backtitle" --cancel-label "Exit" --menu "Choose an option" 22 76 16)
         local options=(
             1 "Upgrade Raspbian packages"
             2 "Install Pixel desktop environment"
