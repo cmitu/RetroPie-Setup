@@ -11,9 +11,9 @@
 
 rp_module_id="steamcontroller"
 rp_module_desc="User-mode driver for Steam Controller"
-rp_module_help="Steam Controller Driver from https://github.com/Ryochan7/sc-controller"
-rp_module_licence="GPL2 https://raw.githubusercontent.com/Ryochan7/sc-controller/python3/LICENSE"
-rp_module_repo="git https://github.com/Ryochan7/sc-controller python3"
+rp_module_help="Steam Controller Driver from https://github.com/C0rn3j/sc-controller"
+rp_module_licence="GPL2 https://raw.githubusercontent.com/C0rn3j/sc-controller/python3/LICENSE"
+rp_module_repo="git  https://github.com/C0rn3j/sc-controller.git python3"
 rp_module_section="driver"
 
 function _update_hook_steamcontroller() {
@@ -34,7 +34,7 @@ function install_steamcontroller() {
     # build the driver in a virtualenv created in $md_inst
     virtualenv -p python3 "$md_inst"
     source "$md_inst/bin/activate"
-    pip3 install libusb1 evdev
+    pip3 install libusb1 evdev ioctl_opt
     pip3 install "sccontroller @ file://$md_build"
     deactivate
 
@@ -46,16 +46,14 @@ function enable_steamcontroller() {
     local profile="$1"
     [[ -z "$profile" ]] && profile="XBox Controller"
 
-    local config="\"$md_inst/bin/scc-daemon\" --alone \"$md_inst/default_profiles/$profile.sccprofile\" start"
-
     disable_steamcontroller
     cat > /etc/systemd/system/sc-controller.service << _EOF_
 [Unit]
 Description=Userspace Steamcontroller driver
 
 [Service]
-Type=forking
-ExecStart=$config
+ExecStart="$md_inst/bin/scc-daemon" "$md_inst/default_profiles/$profile.sccprofile" debug
+ExecStop="$md_inst/bin/scc-daemon" stop
 
 [Install]
 WantedBy=multi-user.target
@@ -67,11 +65,11 @@ _EOF_
 }
 
 function disable_steamcontroller() {
-    # remove any previous start-up commands from /etc/rc.local
+    # remove start commands from /etc/rc.local
     [[ -f "/etc/rc.local" ]] && sed -i "/bin\/scc-daemon.*start/d" /etc/rc.local
     if systemctl -q is-enabled sc-controller.service 2>/dev/null; then
         systemctl stop sc-controller.service
-        systemctl disable sc-controller.service
+        systemctl -q disable sc-controller.service
     fi
 }
 
