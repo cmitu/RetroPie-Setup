@@ -46,22 +46,42 @@ function enable_steamcontroller() {
     local profile="$1"
     [[ -z "$profile" ]] && profile="XBox Controller"
 
-    local config="\"$md_inst/bin/scc-daemon\" \"$md_inst/default_profiles/$profile.sccprofile\" start"
+    local config="\"$md_inst/bin/scc-daemon\" --alone \"$md_inst/default_profiles/$profile.sccprofile\" start"
 
     disable_steamcontroller
-    sed -i "s|^exit 0$|${config}\\nexit 0|" /etc/rc.local
-    printMsgs "dialog" "Steamcontroller enabled in /etc/rc.local with the following profile:\n\n$profile\n\nIt will be started on next boot."
+    cat > /etc/systemd/system/sc-controller.service << _EOF_
+[Unit]
+Description=Userspace Steamcontroller driver
+
+[Service]
+Type=forking
+ExecStart=$config
+
+[Install]
+WantedBy=multi-user.target
+_EOF_
+    systemctl daemon-reload
+    systemctl -q enable sc-controller.service
+    systemctl start sc-controller.service
+    printMsgs "dialog" "Steamcontroller enabled and started with profile:\n\n$profile"
 }
 
 function disable_steamcontroller() {
-    sed -i "/bin\/sc-.*.py/d" /etc/rc.local           # previous version
-    sed -i "/bin\/scc-daemon.*start/d" /etc/rc.local  # current version
-    $md_inst/bin/scc-daemon stop
+    # remove any previous start-up commands from /etc/rc.local
+    [[ -f "/etc/rc.local" ]] && sed -i "/bin\/scc-daemon.*start/d" /etc/rc.local
+    if systemctl -q is-enabled sc-controller.service 2>/dev/null; then
+        systemctl stop sc-controller.service
+        systemctl disable sc-controller.service
+    fi
 }
 
 function remove_steamcontroller() {
     disable_steamcontroller
     rm -f /etc/udev/rules.d/99-steam-controller.rules
+    if [[ -f "/etc/systemd/system/sc-controller.service" ]]; then
+        rm -f "/etc/systemd/system/sc-controller.service"
+        systemctl daemon-reload
+    fi
 }
 
 function configure_steamcontroller() {
@@ -96,7 +116,7 @@ function gui_steamcontroller() {
                     ;;
                 3)
                     disable_steamcontroller
-                    printMsgs "dialog" "steamcontroller removed from /etc/rc.local"
+                    printMsgs "dialog" "Steamcontroller service has been disabled"
                     ;;
             esac
         else
