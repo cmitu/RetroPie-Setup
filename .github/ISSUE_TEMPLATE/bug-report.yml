@@ -1,0 +1,22 @@
+name: Open an issue
+description: |
+ Report a bug with RetroPie-Setup scripts
+body:
+
+  - type: markdown
+    id: info
+    attributes:
+      value: |
+        ### Important
+        **DO NOT** use this issue for general support questions, installation assistance, feature requests or emulator support.
+        The **[RetroPie forums](https://retropie.org.uk/forum)** should be used first.
+    validations:
+      required: false
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+    validations:
+      required: true
+

@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: RetroPie Forums
+    url: https://retropie.org.uk/forum
+    about: Please ask your setup and general support inquiries in the RetroPie forums.
+  - name: RetroPie Documentation
+    url: https://retropie.org.uk/docs
+    about: Search the RetroPie documentation for existing questions/solutions/configuration tips.
