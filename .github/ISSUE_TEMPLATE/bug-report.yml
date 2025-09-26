@@ -6,17 +6,17 @@ body:
   - type: markdown
     id: info
     attributes:
-      value: |
-        ### Important
-        **DO NOT** use this issue for general support questions, installation assistance, feature requests or emulator support.
-        The **[RetroPie forums](https://retropie.org.uk/forum)** should be used first.
+     label: Important
+     value: |
+       **Only** RetroPie-Setup bugs should be reported here.
+       The **[RetroPie forums](https://retropie.org.uk/forum)** should be used used for any other question/support request.
     validations:
       required: false
 
   - type: textarea
     id: description
     attributes:
-      label: Describe the bug
+      label: Description of the bug
     validations:
       required: true
 
