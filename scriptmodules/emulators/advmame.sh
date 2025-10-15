@@ -12,8 +12,8 @@
 rp_module_id="advmame"
 rp_module_desc="AdvanceMAME"
 rp_module_help="ROM Extension: .zip\n\nCopy your AdvanceMAME roms to either $romdir/mame-advmame or\n$romdir/arcade"
-rp_module_licence="GPL2 https://raw.githubusercontent.com/amadvance/advancemame/master/COPYING"
-rp_module_repo="git https://github.com/amadvance/advancemame v3.10"
+rp_module_licence="NONCOM https://raw.githubusercontent.com/amadvance/advancemame/master/COPYING"
+rp_module_repo="git https://github.com/amadvance/advancemame v5.0"
 rp_module_section="opt"
 rp_module_flags="sdl2 sdl1-videocore"
 
@@ -48,6 +48,9 @@ function build_advmame() {
         params+=(--enable-sdl2 --disable-sdl --disable-vc)
     fi
     ./autogen.sh
+    # automake is needed on Debian 10/Buster
+    automake --force-missing --add-missing
+    isPlatform "arm" && CFLAGS="$CFLAGS -fsigned-char"
     ./configure CFLAGS="$CFLAGS -fno-stack-protector" --prefix="$md_inst" "${params[@]}"
     make clean
     make
