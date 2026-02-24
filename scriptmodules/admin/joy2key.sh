@@ -15,6 +15,7 @@ rp_module_section="core"
 
 function _update_hook_joy2key() {
     # make sure joy2key is always updated when updating retropie-setup
+    buster_fix_apt_raspbiantools
     rp_isInstalled "$md_id" && rp_callModule "$md_id"
 }
 
