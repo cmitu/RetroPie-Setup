@@ -43,15 +43,26 @@ _EOF_
 
     cat > "hidsony_source.sh" << _EOF_
 #!/bin/bash
-rpi_kernel_ver="rpi-5.10.y"
+
+# find the kernel version before compiling
+if [ -z "\$kernelver" ]; then
+  kernelver=\$(echo "\$DPKG_MAINTSCRIPT_PACKAGE" | sed -r 's/linux-(headers|image)-//')
+fi
+
+if dpkg --compare-versions \$kernelver lt 6.12; then
+    rpi_kernel_ver="5.10"
+else
+    rpi_kernel_ver="6.12"
+fi
+
 mkdir -p "drivers/hid/" "patches"
-curl -s https://raw.githubusercontent.com/raspberrypi/linux/"\$rpi_kernel_ver"/drivers/hid/hid-sony.c -o "drivers/hid/hid-sony.c"
-curl -s https://raw.githubusercontent.com/raspberrypi/linux/"\$rpi_kernel_ver"/drivers/hid/hid-ids.h -o "drivers/hid/hid-ids.h"
-patch -p1 <"patches/0001-hidsony-gasiafix.diff"
+curl -s https://raw.githubusercontent.com/raspberrypi/linux/"rpi-\${rpi_kernel_ver}.y"/drivers/hid/hid-sony.c -o "drivers/hid/hid-sony.c"
+curl -s https://raw.githubusercontent.com/raspberrypi/linux/"rpi-\${rpi_kernel_ver}.y"/drivers/hid/hid-ids.h -o "drivers/hid/hid-ids.h"
+patch -p1 <"patches/0001-hidsony-gasiafix-\${rpi_kernel_ver}.diff"
 _EOF_
     chmod +x "hidsony_source.sh"
 
-    cp "$md_data/0001-hidsony-gasiafix.diff" "patches/"
+    cp "$md_data/"0001-hidsony-gasiafix-*.diff "patches/"
 
     popd
 }
