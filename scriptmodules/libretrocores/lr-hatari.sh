@@ -11,33 +11,29 @@
 
 rp_module_id="lr-hatari"
 rp_module_desc="Atari emulator - Hatari port for libretro"
-rp_module_help="ROM Extensions: .st .stx .img .rom .raw .ipf .ctr .zip\n\nCopy your Atari ST games to $romdir/atarist"
-rp_module_licence="GPL2 https://raw.githubusercontent.com/libretro/hatari/master/gpl.txt"
-rp_module_repo="git https://github.com/libretro/hatari.git master"
-rp_module_section="exp"
+rp_module_help="ROM Extensions: .st .stx .img .rom .raw .ipf .ctr .zip\n\nCopy your Atari ST games to $romdir/atarist and the BIOS file 'tos.img' to $biosdir"
+rp_module_licence="GPL2 https://raw.githubusercontent.com/libretro/hatari/main/gpl.txt"
+rp_module_repo="git https://github.com/libretro/hatari.git main"
+rp_module_section="opt"
 
 function depends_lr-hatari() {
-    getDepends zlib1g-dev
+    getDepends cmake
 }
 
 function sources_lr-hatari() {
     gitPullOrClone
-    applyPatch "$md_data/01_libcapsimage.diff"
-    _sources_libcapsimage_hatari
 }
 
 function build_lr-hatari() {
-    _build_libcapsimage_hatari
-
-    cd "$md_build"
-    CFLAGS+=" -D__cdecl='' -I\"$md_build/src/includes/caps\" -DHAVE_CAPSIMAGE=1 -DCAPSIMAGE_VERSION=5" CAPSIMG_LDFLAGS="-L./lib -l:libcapsimage.so.5.1" make -f Makefile.libretro
-    md_ret_require="$md_build/hatari_libretro.so"
+    rm -fr build && mkdir build && cd build
+    cmake -S .. -DENABLE_LIBRETRO=ON -DENABLE_HATARI=OFF -DENABLE_TOOLS=OFF -DENABLE_STATIC_ZLIB=ON -DENABLE_STATIC_CAPSIMAGE=ON
+    make
+    md_ret_require="$md_build/build/src/hatari_libretro.so"
 }
 
 function install_lr-hatari() {
-    _install_libcapsimage_hatari
     md_ret_files=(
-        'hatari_libretro.so'
+        'build/src/hatari_libretro.so'
         'readme.txt'
         'gpl.txt'
     )
@@ -52,11 +48,4 @@ function configure_lr-hatari() {
 
     addEmulator 1 "$md_id" "atarist" "$md_inst/hatari_libretro.so"
     addSystem "atarist"
-
-    [[ "$md_mode" == "remove" ]] && return
-
-    # add LD_LIBRARY_PATH='$md_inst' to start of launch command
-    iniConfig " = " '"' "$configdir/atarist/emulators.cfg"
-    iniGet "$md_id"
-    iniSet "$md_id" "LD_LIBRARY_PATH='$md_inst' $ini_value"
 }
