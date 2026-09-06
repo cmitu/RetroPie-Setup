@@ -1,18 +1,18 @@
 diff --git a/Makefile.libretro b/Makefile.libretro
-index 58e33e4..eb654c6 100755
+index 4480897..644cfab 100755
 --- a/Makefile.libretro
 +++ b/Makefile.libretro
-@@ -225,7 +225,7 @@ $(TARGET): $(OBJECTS)
- ifeq ($(STATIC_LINKING_LINK),1)
- 	$(AR) rcs $@ $(OBJECTS) 
- else
--	$(CC) $(CFLAGS) $(INCFLAGS) $(LDFLAGS) $(OBJECTS) -o $@ -lm $(ZLIB) $(SHARED)
-+	$(CC) $(CFLAGS) $(INCFLAGS) $(LDFLAGS) $(OBJECTS) -o $@ -lm $(ZLIB) $(SHARED) $(CAPSIMG_LDFLAGS)
- endif
+@@ -19,7 +19,7 @@ endif
  
- %.o: %.c
+ EXTERNAL_ZLIB ?= 0
+ 
+-TARGET_NAME	:= hatari2014
++TARGET_NAME	:= hatari
+ GIT_VERSION := " $(shell git rev-parse --short HEAD || echo unknown)"
+ ifneq ($(GIT_VERSION)," unknown")
+ 	CFLAGS += -DGIT_VERSION=\"$(GIT_VERSION)\"
 diff --git a/src/floppy_ipf.c b/src/floppy_ipf.c
-index c615b75..3626c19 100644
+index 2282084..fe418c5 100644
 --- a/src/floppy_ipf.c
 +++ b/src/floppy_ipf.c
 @@ -24,6 +24,7 @@ const char floppy_ipf_fileid[] = "Hatari floppy_ipf.c : " __DATE__ " " __TIME__;
