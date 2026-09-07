@@ -22,7 +22,8 @@ function depends_lr-hatari() {
 
 function sources_lr-hatari() {
     gitPullOrClone
-    applyPatch "$md_data/01_libcapsimage.diff"
+    # TARGET_NAME should be overriden by user input
+    sed -i "s/TARGET_NAME :=/TARGET_NAME ?=/" "$md_build/Makefile.libretro"
     _sources_libcapsimage_hatari
 }
 
@@ -31,7 +32,7 @@ function build_lr-hatari() {
 
     cd "$md_build"
     make -f Makefile.libretro clean
-    LDFLAGS="-Wl,-rpath='$md_inst'" make -f Makefile.libretro capsimg=1 capssrc="$md_build/capsimg_source_linux_macosx" capslib="$md_build/lib" capslibname=":libcapsimage.so.5.1"
+    make -f Makefile.libretro capsimg=1 capssrc="$md_build/capsimg_source_linux_macosx" capslib="$md_build/lib" capslibname=":libcapsimage.so.5.1" TARGET_NAME="hatari" LDFLAGS="-Wl,-rpath='$md_inst'" 
     md_ret_require="$md_build/hatari_libretro.so"
 }
 
